@@ -4,6 +4,7 @@
  */
 const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
 const { withRetry } = require('../utils/retry');
 
 const API_BASE = 'https://api.weixin.qq.com';
@@ -55,14 +56,18 @@ class WeChatClient {
 
     console.log(`上传永久图片素材: ${imagePath}`);
 
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('media', fs.createReadStream(imagePath));
+    // 使用 Node 18 内置 FormData + Blob
+    const fileBuffer = await fs.promises.readFile(imagePath);
+    const blob = new Blob([fileBuffer]);
+    const fileName = path.basename(imagePath);
+    const formData = new FormData();
+    formData.append('media', blob, fileName);
 
+    const boundary = `----FormBoundary${Math.random().toString(36).substring(2)}`;
+    // axios 支持直接传 FormData
     const resp = await withRetry(() =>
-      axios.post(url, form, {
+      axios.post(url, formData, {
         params: { access_token: token, type: 'image' },
-        headers: form.getHeaders(),
         timeout: 30000,
       })
     );
@@ -85,14 +90,14 @@ class WeChatClient {
 
     console.log(`上传正文图片: ${imagePath}`);
 
-    const FormData = require('form-data');
-    const form = new FormData();
-    form.append('media', fs.createReadStream(imagePath));
+    const fileBuffer = await fs.promises.readFile(imagePath);
+    const blob = new Blob([fileBuffer]);
+    const formData = new FormData();
+    formData.append('media', blob, path.basename(imagePath));
 
     const resp = await withRetry(() =>
-      axios.post(url, form, {
+      axios.post(url, formData, {
         params: { access_token: token },
-        headers: form.getHeaders(),
         timeout: 30000,
       })
     );
