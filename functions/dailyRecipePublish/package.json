@@ -1,0 +1,11 @@
+{
+  "name": "daily-recipe-publish",
+  "version": "1.0.0",
+  "description": "每日家常菜公众号自动发布 - CloudBase 云函数",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "form-data": "^4.0.0"
+  }
+}

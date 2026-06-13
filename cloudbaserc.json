@@ -1,0 +1,22 @@
+{
+  "envId": "tinyer-123-d3g63vdjsf01f22fe",
+  "version": "2.0",
+  "functions": [
+    {
+      "name": "dailyRecipePublish",
+      "timeout": 60,
+      "runtime": "Nodejs18.15",
+      "triggers": [
+        {
+          "name": "daily_trigger",
+          "type": "timer",
+          "config": "0 45 8 * * * *"
+        }
+      ],
+      "envVariables": {
+        "WECHAT_APP_ID": "",
+        "WECHAT_APP_SECRET": ""
+      }
+    }
+  ]
+}
