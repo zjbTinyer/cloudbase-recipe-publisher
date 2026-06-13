@@ -115,13 +115,31 @@ exports.main = async (event, context) => {
     const payload = buildDraftPayload(recipe, html, thumbMediaId, config.authorName);
     const draftId = await wechat.addDraft(payload);
 
-    // 8. 发布
+    // 8. 发布（认证前可能因48001失败，不影响草稿）
     console.log('>>> 第6步: 提交发布');
-    const publishId = await wechat.publish(draftId);
+    let publishId = '';
+    let autoPublished = false;
+    try {
+      publishId = await wechat.publish(draftId);
+      autoPublished = true;
+    } catch (e) {
+      if (e.message.includes('48001')) {
+        console.warn('⚠️ 发布接口需要公众号认证（48001），草稿已生成，请手动发布');
+      } else {
+        throw e;
+      }
+    }
 
     console.log('='.repeat(50));
-    console.log(`✅ 发布成功！${recipe.title} | publish_id: ${publishId} | 耗时: ${((Date.now()-start)/1000).toFixed(1)}s`);
-    return { success: true, title: recipe.title, publishId };
+    if (autoPublished) {
+      console.log(`✅ 发布成功！${recipe.title} | publish_id: ${publishId}`);
+    } else {
+      console.log(`✅ 草稿已生成！${recipe.title} | draft_media_id: ${draftId}`);
+      console.log('📱 请前往 mp.weixin.qq.com → 草稿箱 → 手动发布');
+    }
+    console.log(`耗时: ${((Date.now()-start)/1000).toFixed(1)}s`);
+    console.log('='.repeat(50));
+    return { success: true, title: recipe.title, draftId, publishId, autoPublished };
   } catch (e) {
     console.error(`❌ 失败: ${e.message}`);
     return { success: false, error: e.message };

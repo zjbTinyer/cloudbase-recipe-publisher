@@ -12,11 +12,7 @@
           "type": "timer",
           "config": "0 45 8 * * * *"
         }
-      ],
-      "envVariables": {
-        "WECHAT_APP_ID": "",
-        "WECHAT_APP_SECRET": ""
-      }
+      ]
     }
   ]
 }

@@ -82,7 +82,8 @@ async function parseRecipeDetail(url) {
   let imgMatch;
   while ((imgMatch = imgRe.exec(html))) {
     const src = imgMatch[1];
-    if (src && !src.includes('avatar') && !src.includes('logo') && src.includes('douguo')) {
+    // 只保留菜谱步骤图，过滤 logo/qrcode/banner/static/avatar
+    if (src && src.includes('/upload/caiku/') && !src.includes('/static/') && !src.includes('/banner/')) {
       stepImages.push(src);
     }
   }
